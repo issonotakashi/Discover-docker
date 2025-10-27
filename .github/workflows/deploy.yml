@@ -1,0 +1,40 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          ssh-keyscan -H sami.semlali.takima.cloud >> ~/.ssh/known_hosts
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Deploy with Ansible
+        run: |
+          cd ansible
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
+          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file vault_pass.txt
+          rm vault_pass.txt
+
+      - name: Verify deployment
+        run: |
+          sleep 30  # Wait for services to start
+          curl -f http://sami.semlali.takima.cloud:8080/students || exit 1
+          echo "Deployment successful! API is responding."
