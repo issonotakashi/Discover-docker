@@ -7,6 +7,9 @@ on:
 jobs:
   security-checks:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
     
     steps:
       - name: Checkout code
@@ -24,6 +27,8 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+        permissions:
+          security-events: write
 
       - name: Check for critical vulnerabilities
         run: |
@@ -62,9 +67,8 @@ jobs:
 
       - name: Deploy with Ansible
         run: |
-          cd ansible
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
-          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file vault_pass.txt
+          ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml --vault-password-file vault_pass.txt
           rm vault_pass.txt
 
       - name: Health check
