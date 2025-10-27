@@ -1,0 +1,12 @@
+
+- name: Run PostgreSQL container
+  docker_container:
+    name: database
+    image: "{{ dockerhub_username }}/tp-devops-database:latest"
+    env_file: /home/admin/.env
+    networks:
+      - name: app-network
+    state: started
+    restart_policy: always
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python

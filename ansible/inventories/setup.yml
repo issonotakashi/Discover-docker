@@ -1,0 +1,9 @@
+all:
+  vars:
+    ansible_user: admin
+    ansible_ssh_private_key_file: /Users/samisemlali/Downloads/id_rsa
+  children:
+    prod:
+      hosts:
+        sami.semlali.takima.cloud:
+

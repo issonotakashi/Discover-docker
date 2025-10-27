@@ -1,0 +1,12 @@
+- name: Launch PostgreSQL container
+  community.docker.docker_container:
+    name: database
+    image: discover-docker-database:latest
+    state: started
+    restart_policy: always
+    env:
+      POSTGRES_DB: "{{ postgres_db }}"
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    networks:
+      - name: app-network

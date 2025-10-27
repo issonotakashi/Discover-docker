@@ -1,0 +1,31 @@
+- name: Install Python3 and pip3
+  apt:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: Create virtual environment directory
+  file:
+    path: /opt/docker_venv
+    state: directory
+    mode: '0755'
+
+- name: Create virtual environment
+  pip:
+    name: virtualenv
+    virtualenv: /opt/docker_venv
+    virtualenv_command: virtualenv
+    state: present
+
+- name: Install Docker SDK for Python in virtual environment
+  pip:
+    name: docker
+    virtualenv: /opt/docker_venv
+    state: present
+
+- name: Make sure Docker is running
+  systemd:
+    name: docker
+    state: started
+    enabled: yes

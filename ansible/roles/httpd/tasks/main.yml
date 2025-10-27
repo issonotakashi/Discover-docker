@@ -1,0 +1,10 @@
+- name: Launch httpd proxy container
+  community.docker.docker_container:
+    name: httpd
+    image: discover-docker-httpd:latest
+    state: started
+    restart_policy: never 
+    ports:
+      - "80:80"
+    networks:
+      - name: proxy-network

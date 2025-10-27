@@ -1,0 +1,16 @@
+# Variables sécurisées pour le déploiement
+# Ne jamais commiter ce fichier avec des vraies valeurs !
+
+# Configuration de la base de données
+postgres_db: "{{ vault_postgres_db | default('db') }}"
+postgres_user: "{{ vault_postgres_user | default('usr') }}"
+postgres_password: "{{ vault_postgres_password | default('pwd') }}"
+
+# Configuration de l'application
+spring_datasource_url: "jdbc:postgresql://database:5432/{{ postgres_db }}"
+spring_datasource_username: "{{ postgres_user }}"
+spring_datasource_password: "{{ postgres_password }}"
+
+# Configuration du serveur
+server_port: "8080"
+spring_application_name: simpleapi
