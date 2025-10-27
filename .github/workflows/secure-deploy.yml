@@ -1,0 +1,103 @@
+name: Secure Deploy to Production
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  security-checks:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Security scan with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Check for critical vulnerabilities
+        run: |
+          if grep -q '"severity": "CRITICAL"' trivy-results.sarif; then
+            echo "Critical vulnerabilities found! Deployment blocked."
+            exit 1
+          fi
+          echo "No critical vulnerabilities found. Proceeding with deployment."
+
+  deploy:
+    needs: security-checks
+    runs-on: ubuntu-latest
+    environment: production  # Requires manual approval
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          ssh-keyscan -H sami.semlali.takima.cloud >> ~/.ssh/known_hosts
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Backup current deployment
+        run: |
+          ssh admin@sami.semlali.takima.cloud "sudo docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}' > /tmp/backup-$(date +%Y%m%d-%H%M%S).txt"
+
+      - name: Deploy with Ansible
+        run: |
+          cd ansible
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
+          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file vault_pass.txt
+          rm vault_pass.txt
+
+      - name: Health check
+        run: |
+          echo "Waiting for services to start..."
+          sleep 30
+          
+          # Test API endpoint
+          if curl -f http://sami.semlali.takima.cloud:8080/students; then
+            echo "✅ API is responding correctly"
+          else
+            echo "❌ API health check failed"
+            exit 1
+          fi
+          
+          # Test database connectivity (should fail from outside)
+          if nc -z sami.semlali.takima.cloud 5432; then
+            echo "❌ SECURITY ISSUE: Database is accessible from outside!"
+            exit 1
+          else
+            echo "✅ Database is properly isolated"
+          fi
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "🎉 Deployment successful!"
+          echo "API available at: http://sami.semlali.takima.cloud:8080/students"
+          echo "Security checks passed ✅"
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "🔄 Deployment failed, initiating rollback..."
+          ssh admin@sami.semlali.takima.cloud "sudo docker-compose down && sudo docker-compose up -d"
+          echo "Rollback completed"
