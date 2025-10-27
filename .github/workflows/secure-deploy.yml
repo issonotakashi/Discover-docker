@@ -27,8 +27,6 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
-        permissions:
-          security-events: write
 
       - name: Check for critical vulnerabilities
         run: |
@@ -60,6 +58,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ansible
+
+      - name: Verify Ansible files
+        run: |
+          ls -la ansible/
+          ls -la ansible/inventories/
+          ls -la ansible/playbook.yml
 
       - name: Backup current deployment
         run: |

@@ -26,6 +26,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible
 
+      - name: Verify Ansible files
+        run: |
+          ls -la ansible/
+          ls -la ansible/inventories/
+          ls -la ansible/playbook.yml
+
       - name: Deploy with Ansible
         run: |
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
