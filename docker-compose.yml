@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  database:
+    build: ./database
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-db}
+      POSTGRES_USER: ${POSTGRES_USER:-usr}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pwd}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend-spring/simpleapi
+    environment:
+      DB_HOST: ${DB_HOST:-database}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-db}
+      DB_USERNAME: ${DB_USERNAME:-usr}
+      DB_PASSWORD: ${DB_PASSWORD:-pwd}
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      SPRING_APPLICATION_NAME: ${SPRING_APPLICATION_NAME:-simpleapi}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+
+volumes:
+  postgres_data:
