@@ -80,6 +80,9 @@ jobs:
           
           # Fix the API URL to use our proxy
           echo "VUE_APP_API_URL=/api" > .env.production
+          # Also replace any hardcoded localhost URLs in sources
+          grep -R "localhost:8080" -n src || true
+          sed -i -E 's#https?://localhost:8080#${VUE_APP_API_URL:-/api}#g' $(grep -R "localhost:8080" -l src || true)
           
           # Build the Docker image with the corrected config
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest .
