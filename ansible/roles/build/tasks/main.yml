@@ -1,0 +1,60 @@
+- name: Create temporary directories for Docker builds
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /tmp/database
+    - /tmp/backend
+    - /tmp/httpd
+
+- name: Copy database files to remote server
+  copy:
+    src: ../../database/
+    dest: /tmp/database/
+    mode: '0644'
+
+- name: Build database Docker image
+  community.docker.docker_image:
+    name: discover-docker-database
+    tag: latest
+    source: build
+    build:
+      path: /tmp/database
+    state: present
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python
+
+- name: Copy backend files to remote server
+  copy:
+    src: ../../backend-spring/simpleapi/
+    dest: /tmp/backend/
+    mode: '0644'
+
+- name: Build backend Docker image
+  community.docker.docker_image:
+    name: discover-docker-backend
+    tag: latest
+    source: build
+    build:
+      path: /tmp/backend
+    state: present
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python
+
+- name: Copy HTTPD files to remote server
+  copy:
+    src: ../../httpd/
+    dest: /tmp/httpd/
+    mode: '0644'
+
+- name: Build HTTPD Docker image
+  community.docker.docker_image:
+    name: discover-docker-httpd
+    tag: latest
+    source: build
+    build:
+      path: /tmp/httpd
+    state: present
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python

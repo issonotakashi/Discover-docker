@@ -1,0 +1,10 @@
+---
+# Default variables for build role
+build_dir: /tmp
+docker_images:
+  - name: discover-docker-database
+    path: database
+  - name: discover-docker-backend
+    path: backend-spring/simpleapi
+  - name: discover-docker-httpd
+    path: httpd
