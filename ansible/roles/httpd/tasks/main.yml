@@ -5,7 +5,7 @@
     state: started
     restart_policy: unless-stopped
     recreate: true
-    force_restart: true
+    restart: true
     ports:
       - "80:80"
     networks:

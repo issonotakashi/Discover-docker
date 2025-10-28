@@ -6,7 +6,7 @@
     restart_policy: on-failure
     restart_retries: 3
     recreate: true
-    force_restart: true
+    restart: true
     env:
       SPRING_DATASOURCE_URL: "{{ spring_datasource_url }}"
       SPRING_DATASOURCE_USERNAME: "{{ spring_datasource_username }}"
