@@ -6,7 +6,7 @@ async function main() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     status.textContent = `Loaded ${data.length} students`;
-    list.innerHTML = data.map(s => `<li>${s.firstname} ${s.lastname} (id: ${s.id})</li>`).join('');
+    list.innerHTML = data.map(s => `<li>${s.firstName} ${s.lastName} (id: ${s.id})</li>`).join('');
   } catch (e) {
     status.classList.add('error');
     status.textContent = `Error: ${e.message}`;
