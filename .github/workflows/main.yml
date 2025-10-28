@@ -72,32 +72,12 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
 
-      - name: Build and push frontend image (from external repo)
-        run: |
-          # Clone the external frontend repo
-          git clone https://github.com/takima-training/devops-front.git frontend-temp
-          cd frontend-temp
-          
-          # Fix the API URL to use our proxy
-          echo "VUE_APP_API_URL=/api" > .env.production
-          
-          # Replace ALL hardcoded localhost:8080 URLs in the entire codebase
-          echo "Replacing all localhost:8080 occurrences..."
-          find . -type f \( -name "*.js" -o -name "*.vue" -o -name "*.ts" -o -name "*.json" \) -exec sed -i 's|http://localhost:8080|/api|g' {} \;
-          find . -type f \( -name "*.js" -o -name "*.vue" -o -name "*.ts" -o -name "*.json" \) -exec sed -i 's|https://localhost:8080|/api|g' {} \;
-          find . -type f \( -name "*.js" -o -name "*.vue" -o -name "*.ts" -o -name "*.json" \) -exec sed -i 's|localhost:8080|/api|g' {} \;
-          
-          # Show what was changed
-          echo "Files containing /api after replacement:"
-          grep -r "/api" . --include="*.js" --include="*.vue" --include="*.ts" || true
-          
-          # Build the Docker image with the corrected config
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest
-          
-          # Cleanup
-          cd ..
-          rm -rf frontend-temp
+      - name: Build and push frontend image (custom modified)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend-custom
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest
   
   deploy:
     needs: build-and-push-docker-image
