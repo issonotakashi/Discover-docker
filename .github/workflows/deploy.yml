@@ -32,6 +32,19 @@ jobs:
           ls -la ansible/inventories/
           ls -la ansible/playbook.yml
 
+      - name: Emergency disk cleanup
+        run: |
+          echo "=== Emergency disk cleanup ==="
+          ssh admin@sami.semlali.takima.cloud "df -h"
+          echo "=== Cleaning Docker ==="
+          ssh admin@sami.semlali.takima.cloud "sudo docker system prune -af --volumes || true"
+          echo "=== Cleaning temp directories ==="
+          ssh admin@sami.semlali.takima.cloud "sudo rm -rf /tmp/* /home/admin/.ansible/tmp/* || true"
+          echo "=== Cleaning logs ==="
+          ssh admin@sami.semlali.takima.cloud "sudo journalctl --vacuum-time=1d || true"
+          echo "=== Final disk check ==="
+          ssh admin@sami.semlali.takima.cloud "df -h"
+
       - name: Deploy with Ansible
         run: |
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault_pass.txt
