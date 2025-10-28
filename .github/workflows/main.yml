@@ -71,6 +71,13 @@ jobs:
           context: ./httpd
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+
+      - name: Build and push frontend image (from external repo)
+        uses: docker/build-push-action@v6
+        with:
+          context: https://github.com/takima-training/devops-front.git#main
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest
   
   deploy:
     needs: build-and-push-docker-image

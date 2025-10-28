@@ -1,0 +1,11 @@
+- name: Launch frontend container
+  community.docker.docker_container:
+    name: front
+    image: issonotakashii/tp-devops-front:latest
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: proxy-network
+
+
