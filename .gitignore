@@ -1,21 +1,32 @@
-# Maven / Java
-target/
-*.iml
+# Fichiers sensibles à ne jamais commiter
+.env
+*.env
+ansible/group_vars/vault.yml
+ansible/vault_pass.txt
+
+# Fichiers temporaires
+*.tmp
 *.log
-*.class
-*.jar
-*.war
-*.ear
-.mvn/wrapper/maven-wrapper.jar
-
-# IDE
-.idea/
-.vscode/
-
-# OS
 .DS_Store
+Thumbs.db
 
-# Docker
-postgres_data/
-pgdata/
-*/pgdata/
+# Fichiers de configuration locaux
+ansible/inventories/local.yml
+ansible/inventories/local_*
+
+# Fichiers de build
+/tmp/
+*.jar
+target/
+build/
+
+# Fichiers IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers Docker
+.dockerignore
+docker-compose.override.yml
