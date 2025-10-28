@@ -1,5 +1,8 @@
 <template>
   <div class="department-list">
+    <h2 style="text-align: center; color: #1890ff; margin-bottom: 20px;">
+      🎓 Students List - Pipeline Test v2.0 🎓
+    </h2>
     <a-row type="flex" justify="center">
       <a-col :xs="24" :sm="22" :md="12" :lg="8" :xl="5">
         <a-row class="department" v-for="student in students" :key="student.id">
