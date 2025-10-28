@@ -29,3 +29,19 @@
     name: docker
     state: started
     enabled: yes
+
+- name: Prune stopped containers
+  command: docker container prune -f
+  changed_when: false
+
+- name: Prune unused images
+  command: docker image prune -a -f
+  changed_when: false
+
+- name: Prune build cache
+  command: docker builder prune -af
+  changed_when: false
+
+- name: Prune unused volumes
+  command: docker volume prune -f
+  changed_when: false

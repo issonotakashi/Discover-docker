@@ -8,6 +8,25 @@
     - /tmp/backend
     - /tmp/httpd
 
+- name: Clean previous temp build directories if any
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/database
+    - /tmp/backend
+    - /tmp/httpd
+
+- name: Re-create temp build directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /tmp/database
+    - /tmp/backend
+    - /tmp/httpd
+
 - name: Copy database files to remote server
   copy:
     src: "{{ playbook_dir }}/../database/"
