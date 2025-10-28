@@ -19,8 +19,11 @@
     name: discover-docker-database
     tag: latest
     source: build
+    force_source: true
     build:
       path: /tmp/database
+      pull: true
+      nocache: true
     state: present
   vars:
     ansible_python_interpreter: /opt/docker_venv/bin/python
@@ -31,13 +34,25 @@
     dest: /tmp/backend/
     mode: '0644'
 
+- name: Remove existing backend Docker image
+  community.docker.docker_image:
+    name: discover-docker-backend
+    tag: latest
+    state: absent
+    force_absent: true
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python
+
 - name: Build backend Docker image
   community.docker.docker_image:
     name: discover-docker-backend
     tag: latest
     source: build
+    force_source: true
     build:
       path: /tmp/backend
+      pull: true
+      nocache: true
     state: present
   vars:
     ansible_python_interpreter: /opt/docker_venv/bin/python
@@ -53,8 +68,11 @@
     name: discover-docker-httpd
     tag: latest
     source: build
+    force_source: true
     build:
       path: /tmp/httpd
+      pull: true
+      nocache: true
     state: present
   vars:
     ansible_python_interpreter: /opt/docker_venv/bin/python
