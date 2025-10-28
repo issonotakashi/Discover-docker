@@ -5,8 +5,11 @@ WORKDIR $MYAPP_HOME
 RUN apk add --no-cache maven
 COPY pom.xml .
 COPY src ./src
-RUN mvn -q -DskipTests dependency:go-offline
-RUN mvn -q -DskipTests package
+# Build with retries to handle transient Maven Central issues
+RUN mvn -q -DskipTests \
+    -Dmaven.wagon.http.retryHandler.count=3 \
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 \
+    package
 
 # Run stage
 FROM eclipse-temurin:21-jre-alpine
