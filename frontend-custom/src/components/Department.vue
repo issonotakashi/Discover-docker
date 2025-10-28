@@ -11,7 +11,7 @@
 
       <a-col :xs="24" :sm="22" :md="12" :lg="8" :xl="5">
         <a-row class="student" v-for="student in students" :key="student.id">
-          <a-col span="24">{{ student.firstname }} - {{ student.lastname }}</a-col>
+          <a-col span="24">{{ student.firstName }} - {{ student.lastName }}</a-col>
         </a-row>
       </a-col>
 
@@ -57,35 +57,36 @@ export default {
   },
   mounted: function() {
     if (this.name) {
-      fetch(`http://${process.env.VUE_APP_API_URL}/departments/${this.name}/students`)
+      // Filter students by department from the main students list
+      fetch(`${process.env.VUE_APP_API_URL}/students`)
         .then(response => response.json())
-        .then(data => (this.students = data));
+        .then(data => {
+          this.students = data.filter(student => student.department.name === this.name);
+        });
     }
-    // get department id
-    fetch(`http://${process.env.VUE_APP_API_URL}/departments/${this.name}`)
-      .then(response => response.json())
-      .then(data => (this.currentDepartment = data));
   },
   methods: {
     async addStudent() {
-      await fetch(`http://${process.env.VUE_APP_API_URL}/students`, {
+      await fetch(`${process.env.VUE_APP_API_URL}/students`, {
         method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          firstname: this.firstname,
-          lastname: this.lastname,
+          firstName: this.firstname,
+          lastName: this.lastname,
           department: {
-            id: this.currentDepartment.id,
-            name: this.currentDepartment.name
+            name: this.name
           }
         })
       });
-      fetch(`http://${process.env.VUE_APP_API_URL}/departments/${this.name}/students`)
+      // Refresh the students list
+      fetch(`${process.env.VUE_APP_API_URL}/students`)
         .then(response => response.json())
-        .then(data => (this.students = data));
+        .then(data => {
+          this.students = data.filter(student => student.department.name === this.name);
+        });
     }
   }
 };
