@@ -3,7 +3,7 @@
     name: httpd
     image: discover-docker-httpd:latest
     state: started
-    restart_policy: no
+    restart_policy: unless-stopped
     ports:
       - "80:80"
     networks:
