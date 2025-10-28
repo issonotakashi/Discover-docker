@@ -7,13 +7,16 @@
   community.docker.docker_container:
     name: backend
     image: discover-docker-backend:latest
+    pull: false
     state: started
     restart_policy: on-failure
     restart_retries: 3
     env:
-      SPRING_DATASOURCE_URL: "{{ spring_datasource_url }}"
-      SPRING_DATASOURCE_USERNAME: "{{ spring_datasource_username }}"
-      SPRING_DATASOURCE_PASSWORD: "{{ spring_datasource_password }}"
+      DB_HOST: "database"
+      DB_PORT: "5432"
+      DB_NAME: "{{ postgres_db }}"
+      DB_USERNAME: "{{ postgres_user }}"
+      DB_PASSWORD: "{{ postgres_password }}"
       SERVER_PORT: "{{ server_port }}"
       SPRING_APPLICATION_NAME: "{{ spring_application_name }}"
     networks:

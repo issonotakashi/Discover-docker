@@ -2,6 +2,7 @@
   community.docker.docker_container:
     name: httpd
     image: discover-docker-httpd:latest
+    pull: false
     state: started
     restart_policy: unless-stopped
     recreate: true
