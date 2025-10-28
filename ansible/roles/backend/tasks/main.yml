@@ -3,7 +3,8 @@
     name: backend
     image: discover-docker-backend:latest
     state: started
-    restart_policy: on-failure:3
+    restart_policy: on-failure
+    restart_retries: 3
     env:
       SPRING_DATASOURCE_URL: "{{ spring_datasource_url }}"
       SPRING_DATASOURCE_USERNAME: "{{ spring_datasource_username }}"
@@ -12,3 +13,4 @@
       SPRING_APPLICATION_NAME: "{{ spring_application_name }}"
     networks:
       - name: app-network
+      - name: proxy-network
