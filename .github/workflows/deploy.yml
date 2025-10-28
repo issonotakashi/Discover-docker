@@ -40,6 +40,7 @@ jobs:
 
       - name: Verify deployment
         run: |
-          sleep 30  # Wait for services to start
-          curl -f http://sami.semlali.takima.cloud:8080/students || exit 1
+          echo "Waiting for services to start..."
+          sleep 45  # give more time for containers to warm up
+          curl -fsS --retry 5 --retry-delay 3 http://sami.semlali.takima.cloud/students || exit 1
           echo "Deployment successful! API is responding."

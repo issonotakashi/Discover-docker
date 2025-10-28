@@ -78,10 +78,10 @@ jobs:
       - name: Health check
         run: |
           echo "Waiting for services to start..."
-          sleep 30
+          sleep 45
           
-          # Test API endpoint
-          if curl -f http://sami.semlali.takima.cloud:8080/students; then
+          # Test API endpoint via httpd proxy on port 80
+          if curl -fsS --retry 5 --retry-delay 3 http://sami.semlali.takima.cloud/students; then
             echo "✅ API is responding correctly"
           else
             echo "❌ API health check failed"
