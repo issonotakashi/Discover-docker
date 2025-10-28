@@ -80,15 +80,16 @@ jobs:
           
           # Fix the API URL to use our proxy
           echo "VUE_APP_API_URL=/api" > .env.production
-          # Also replace any hardcoded localhost URLs in sources (only if present)
-          MATCHED_FILES=$(grep -R "localhost:8080" -l src || true)
-          if [ -n "$MATCHED_FILES" ]; then
-            echo "Replacing hardcoded localhost URLs in:"
-            echo "$MATCHED_FILES" | tr ' ' '\n'
-            sed -i -E 's#https?://localhost:8080#${VUE_APP_API_URL:-/api}#g' $MATCHED_FILES
-          else
-            echo "No hardcoded localhost:8080 occurrences found in src/. Skipping replace."
-          fi
+          
+          # Replace ALL hardcoded localhost:8080 URLs in the entire codebase
+          echo "Replacing all localhost:8080 occurrences..."
+          find . -type f \( -name "*.js" -o -name "*.vue" -o -name "*.ts" -o -name "*.json" \) -exec sed -i 's|http://localhost:8080|/api|g' {} \;
+          find . -type f \( -name "*.js" -o -name "*.vue" -o -name "*.ts" -o -name "*.json" \) -exec sed -i 's|https://localhost:8080|/api|g' {} \;
+          find . -type f \( -name "*.js" -o -name "*.vue" -o -name "*.ts" -o -name "*.json" \) -exec sed -i 's|localhost:8080|/api|g' {} \;
+          
+          # Show what was changed
+          echo "Files containing /api after replacement:"
+          grep -r "/api" . --include="*.js" --include="*.vue" --include="*.ts" || true
           
           # Build the Docker image with the corrected config
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest .
