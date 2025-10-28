@@ -1,8 +1,8 @@
 - name: Launch PostgreSQL container
   community.docker.docker_container:
     name: database
-    image: discover-docker-database:latest
-    pull: false
+    image: issonotakashii/tp-devops-database:latest
+    pull: true
     state: started
     restart_policy: unless-stopped
     env:

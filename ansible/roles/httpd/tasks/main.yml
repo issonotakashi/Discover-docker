@@ -1,8 +1,8 @@
 - name: Launch httpd proxy container
   community.docker.docker_container:
     name: httpd
-    image: discover-docker-httpd:latest
-    pull: false
+    image: issonotakashii/tp-devops-httpd:latest
+    pull: true
     state: started
     restart_policy: unless-stopped
     recreate: true

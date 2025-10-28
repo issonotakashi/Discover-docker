@@ -6,8 +6,8 @@
 - name: Launch backend API container
   community.docker.docker_container:
     name: backend
-    image: discover-docker-backend:latest
-    pull: false
+    image: issonotakashii/tp-devops-simple-api:latest
+    pull: true
     state: started
     restart_policy: on-failure
     restart_retries: 3
