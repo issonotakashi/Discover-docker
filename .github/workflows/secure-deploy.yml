@@ -107,5 +107,5 @@ jobs:
         if: failure()
         run: |
           echo "🔄 Deployment failed, initiating rollback..."
-          ssh admin@sami.semlali.takima.cloud "sudo docker compose down && sudo docker compose up -d"
+          ssh admin@sami.semlali.takima.cloud "if [ -f docker-compose.yml ] || [ -f compose.yaml ] || [ -f docker-compose.yaml ]; then sudo docker compose down && sudo docker compose up -d; else echo 'No compose file found, skipping rollback'; fi"
           echo "Rollback completed"
