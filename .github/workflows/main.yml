@@ -73,11 +73,21 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
 
       - name: Build and push frontend image (from external repo)
-        uses: docker/build-push-action@v6
-        with:
-          context: https://github.com/takima-training/devops-front.git#main
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest
+        run: |
+          # Clone the external frontend repo
+          git clone https://github.com/takima-training/devops-front.git frontend-temp
+          cd frontend-temp
+          
+          # Fix the API URL to use our proxy
+          echo "VUE_APP_API_URL=/api" > .env.production
+          
+          # Build the Docker image with the corrected config
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front:latest
+          
+          # Cleanup
+          cd ..
+          rm -rf frontend-temp
   
   deploy:
     needs: build-and-push-docker-image
